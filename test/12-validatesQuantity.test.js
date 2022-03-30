@@ -3,7 +3,7 @@ const frisby = require("frisby");
 const mysql = require("mysql2/promise");
 const Importer = require("mysql-import");
 
-describe("12-validatesQuantity", () => {
+describe.skip("12-validatesQuantity", () => {
   const url = `http://localhost:${process.env.PORT}`;
   let connection;
 

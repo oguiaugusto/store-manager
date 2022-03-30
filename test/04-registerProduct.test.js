@@ -3,7 +3,7 @@ const mysql = require("mysql2/promise");
 const Importer = require("mysql-import");
 require("dotenv").config();
 
-describe("04-registerProduct", () => {
+describe.skip("04-registerProduct", () => {
   const url = `http://localhost:${process.env.PORT}`;
   let connection;
 
