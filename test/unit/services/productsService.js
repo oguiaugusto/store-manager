@@ -24,7 +24,7 @@ const INVALID_ID_TEST = 15855;
 
 describe('productsService.js', () => {
   describe('listAll should', () => {
-    describe('when no product is found', () => {
+    describe('when no product is found: ', () => {
       before(async () => {
         sinon.stub(productsModel, 'listAll').resolves(null);
       });
@@ -47,7 +47,7 @@ describe('productsService.js', () => {
       });
     });
 
-    describe('when products are found', () => {
+    describe('when products are found: ', () => {
       before(async () => {
         sinon.stub(productsModel, 'listAll').resolves(arrayOfProducts);
       });
@@ -71,7 +71,7 @@ describe('productsService.js', () => {
   });
 
   describe('listById should', () => {
-    describe('when id is invalid', () => {
+    describe('when id is invalid: ', () => {
       it('return an object with an error object', async () => {
         const response = await productsService.listById(null);
 
@@ -89,7 +89,7 @@ describe('productsService.js', () => {
       });
     });
 
-    describe('when no product is found', () => {
+    describe('when no product is found: ', () => {
       before(async () => {
         sinon.stub(productsModel, 'listById').resolves(null);
       });
@@ -112,7 +112,7 @@ describe('productsService.js', () => {
       });
     });
 
-    describe('when the product is found', () => {
+    describe('when the product is found: ', () => {
       before(async () => {
         sinon.stub(productsModel, 'listById').resolves(singleProduct);
       });

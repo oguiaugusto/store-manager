@@ -23,7 +23,7 @@ const INVALID_ID_TEST = 15855;
 
 describe('salesService.js', () => {
   describe('listAll should', () => {
-    describe('when no sale is found', () => {
+    describe('when no sale is found: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listAll').resolves(null);
       });
@@ -46,7 +46,7 @@ describe('salesService.js', () => {
       });
     });
 
-    describe('when sales are found', () => {
+    describe('when sales are found: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listAll').resolves(arrayOfSales);
       });
@@ -70,7 +70,7 @@ describe('salesService.js', () => {
   });
 
   describe('listById should', () => {
-    describe('when id is invalid', () => {
+    describe('when id is invalid: ', () => {
       it('return an object with an error object', async () => {
         const response = await salesService.listById(null);
 
@@ -88,7 +88,7 @@ describe('salesService.js', () => {
       });
     });
 
-    describe('when no sale is found', () => {
+    describe('when no sale is found: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listById').resolves(null);
       });
@@ -111,7 +111,7 @@ describe('salesService.js', () => {
       });
     });
 
-    describe('when the sale is found', () => {
+    describe('when the sale is found: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listById').resolves(singleSale);
       });
