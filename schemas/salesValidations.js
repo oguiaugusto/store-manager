@@ -1,20 +1,20 @@
-const errorCodes = require('./errorCodes');
+const httpCodes = require('./httpCodes');
 
 const errorMessages = {
-  invalidId: 'Id must be a number!',
+  invalidId: '"id" must be a number!',
   noSaleFound: 'No sale was found',
   saleNotFound: 'Sale not found',
 };
 
 const errorObjects = {
   invalidId: {
-    error: { code: errorCodes.BAD_REQUEST, message: errorMessages.invalidId },
+    error: { code: httpCodes.BAD_REQUEST, message: errorMessages.invalidId },
   },
   noSaleFound: {
-    error: { code: errorCodes.NOT_FOUND, message: errorMessages.noSaleFound },
+    error: { code: httpCodes.NOT_FOUND, message: errorMessages.noSaleFound },
   },
   saleNotFound: {
-    error: { code: errorCodes.NOT_FOUND, message: errorMessages.saleNotFound },
+    error: { code: httpCodes.NOT_FOUND, message: errorMessages.saleNotFound },
   },
 };
 

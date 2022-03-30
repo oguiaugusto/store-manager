@@ -5,7 +5,7 @@ const productsModel = require('../../../models/productsModel');
 const productsService = require('../../../services/productsService');
 
 const { errorMessages } = require('../../../schemas/productsValidations');
-const errorCodes = require('../../../schemas/errorCodes');
+const httpCodes = require('../../../schemas/httpCodes');
 
 const singleProduct = {
   id: 1,
@@ -42,7 +42,7 @@ describe('productsService.js', () => {
 
         expect(response.error).to.have.property('code');
         expect(response.error).to.have.property('message');
-        expect(response.error.code).to.be.equal(errorCodes.NOT_FOUND);
+        expect(response.error.code).to.be.equal(httpCodes.NOT_FOUND);
         expect(response.error.message).to.be.equal(errorMessages.noProductFound);
       });
     });
@@ -84,7 +84,7 @@ describe('productsService.js', () => {
 
         expect(response.error).to.have.property('code');
         expect(response.error).to.have.property('message');
-        expect(response.error.code).to.be.equal(errorCodes.BAD_REQUEST);
+        expect(response.error.code).to.be.equal(httpCodes.BAD_REQUEST);
         expect(response.error.message).to.be.equal(errorMessages.invalidId);
       });
     });
@@ -107,7 +107,7 @@ describe('productsService.js', () => {
 
         expect(response.error).to.have.property('code');
         expect(response.error).to.have.property('message');
-        expect(response.error.code).to.be.equal(errorCodes.NOT_FOUND);
+        expect(response.error.code).to.be.equal(httpCodes.NOT_FOUND);
         expect(response.error.message).to.be.equal(errorMessages.productNotFound);
       });
     });
