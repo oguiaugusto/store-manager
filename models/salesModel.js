@@ -16,7 +16,7 @@ const listById = async (id) => {
   );
 
   if (!sale || sale.length === 0) return null;
-  return sale;
+  return sale[0];
 };
 
 module.exports = {

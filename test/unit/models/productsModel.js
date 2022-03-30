@@ -79,7 +79,7 @@ describe('productsModel.js', () => {
 
     describe('when the product is found', () => {
       before(async () => {
-        const execute = [singleProduct];
+        const execute = [[singleProduct]];
         sinon.stub(connection, 'execute').resolves(execute);
       });
       after(() => connection.execute.restore());
