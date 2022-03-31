@@ -33,7 +33,7 @@ const create = async ({ name, quantity }) => {
 };
 
 const update = async ({ id, name, quantity }) => {
-  const existingProduct = await productsModel.findByName(name);
+  const existingProduct = await productsModel.listById(id);
   if (!existingProduct) return errorObjects.productNotFound;
 
   const product = await productsModel.update({ id, name, quantity });

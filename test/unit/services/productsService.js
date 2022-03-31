@@ -258,11 +258,11 @@ describe('productsService.js', () => {
     describe('when an error is returned: ', () => {
       before(async () => {
         const error = new Error('Some error thing');
-        sinon.stub(productsModel, 'findByName').resolves(singleProduct);
+        sinon.stub(productsModel, 'listById').resolves(singleProduct);
         sinon.stub(productsModel, 'update').resolves(error);
       });
       after(() => {
-        productsModel.findByName.restore()
+        productsModel.listById.restore()
         productsModel.update.restore()
       });
 
@@ -285,9 +285,9 @@ describe('productsService.js', () => {
 
     describe('when product does not exist: ', () => {
       before(async () => {
-        sinon.stub(productsModel, 'findByName').resolves(null);
+        sinon.stub(productsModel, 'listById').resolves(null);
       });
-      after(() => productsModel.findByName.restore());
+      after(() => productsModel.listById.restore());
 
       it('return an object with an error object', async () => {
         const response = await productsService.update(productToUpdate);
@@ -300,11 +300,11 @@ describe('productsService.js', () => {
 
     describe('when product is updated: ', () => {
       before(async () => {
-        sinon.stub(productsModel, 'findByName').resolves(singleProduct);
+        sinon.stub(productsModel, 'listById').resolves(singleProduct);
         sinon.stub(productsModel, 'update').resolves(productToUpdate);
       });
       after(() => {
-        productsModel.findByName.restore();
+        productsModel.listById.restore();
         productsModel.update.restore();
       });
 
