@@ -8,6 +8,7 @@ const errorMessages = {
   productIdIsRequired: '"productId" is required',
   quantityIsRequired: '"quantity" is required',
   quantityGraterThanZero: '"quantity" must be greater than or equal to 1',
+  saleAlreadyExists: 'Sale already exists',
 };
 
 const errorObjects = {
@@ -34,6 +35,9 @@ const errorObjects = {
       code: httpCodes.UNPROCESSABLE_ENTITY,
       message: errorMessages.quantityGraterThanZero,
     },
+  },
+  saleAlreadyExists: {
+    error: { code: httpCodes.CONFLICT, message: errorMessages.saleAlreadyExists },
   },
 };
 

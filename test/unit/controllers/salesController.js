@@ -41,9 +41,16 @@ const allSales = [
   },
 ];
 
+const newSaleValues = [
+  { productId: 1, quantity: 2 },
+  { productId: 2, quantity: 5 },
+];
+
 const ID_TEST = 1;
 const INVALID_ID_TEST = 'INVALID';
 const NOT_FOUND_ID = 15855;
+
+const updateReturn = { id: ID_TEST, itemUpdated: newSaleValues };
 
 describe('salesService.js', () => {
   describe('listAll should', () => {
@@ -167,6 +174,49 @@ describe('salesService.js', () => {
       it('return json with an array of sales (objects)', async () => {
         await salesController.listById(request, response, next);
         expect(response.json.calledWith(salesById)).to.be.true;
+      });
+    });
+  });
+
+  describe('create should', () => {
+    describe('when an error is returned', () => {
+      const request = { body: newSaleValues };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(salesService, 'create').resolves(errorObjects.internalServerError);
+      });
+      after(() => salesService.create.restore());
+
+      it('return status `500` - Internal Server Error', async () => {
+        await salesController.create(request, response, next);
+        expect(response.status.calledWith(httpCodes.INTERNAL_SERVER_ERROR)).to.be.true;
+      });
+    });
+    describe('when sale is created: ', () => {
+      const request = { body: newSaleValues };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(salesService, 'create').resolves(updateReturn);
+      });
+      after(() => salesService.create.restore());
+
+      it('return status `201 - Created`', async () => {
+        await salesController.create(request, response, next);
+        expect(response.status.calledWith(httpCodes.CREATED)).to.be.true;
+      });
+      it('return json with expected product', async () => {
+        await salesController.create(request, response, next);
+        expect(response.json.calledWith(updateReturn)).to.be.true;
       });
     });
   });
