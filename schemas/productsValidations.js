@@ -9,6 +9,7 @@ const errorMessages = {
   nameLengthGreaterThanFour: '"name" length must be at least 5 characters long',
   quantityIsRequired: '"quantity" is required',
   quantityGraterThanZero: '"quantity" must be greater than or equal to 1',
+  productAlreadyExists: 'Product already exists',
 };
 
 const errorObjects = {
@@ -41,6 +42,9 @@ const errorObjects = {
       code: httpCodes.UNPROCESSABLE_ENTITY,
       message: errorMessages.quantityGraterThanZero,
     },
+  },
+  productAlreadyExists: {
+    error: { code: httpCodes.CONFLICT, message: errorMessages.productAlreadyExists },
   },
 };
 

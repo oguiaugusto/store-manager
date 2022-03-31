@@ -19,6 +19,11 @@ const arrayOfProducts = [
   { id: 3, name: 'Product3', quantity: 3 },
 ];
 
+const newProductValues = {
+  name: 'Product1',
+  quantity: 1,
+};
+
 const ID_TEST = 1;
 const INVALID_ID_TEST = 15855;
 
@@ -173,6 +178,71 @@ describe('productsService.js', () => {
       it('the object must have the expected values', async () => {
         const response = await productsService.listById(ID_TEST);
 
+        expect(response).to.be.eql(singleProduct);
+      });
+    });
+  });
+
+  describe('create should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'findByName').resolves(null);
+        sinon.stub(productsModel, 'create').resolves(error);
+      });
+      after(() => {
+        productsModel.findByName.restore()
+        productsModel.create.restore()
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await productsService.create(singleProduct.name);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await productsService.create(singleProduct.name);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when product already exists: ', () => {
+      before(async () => {
+        sinon.stub(productsModel, 'findByName').resolves(singleProduct);
+      });
+      after(() => productsModel.findByName.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await productsService.create(newProductValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+    });
+
+    describe('when product is created: ', () => {
+      before(async () => {
+        sinon.stub(productsModel, 'findByName').resolves(null);
+        sinon.stub(productsModel, 'create').resolves(singleProduct);
+      });
+      after(() => {
+        productsModel.findByName.restore();
+        productsModel.create.restore();
+      });
+
+      it('returns an object', async () => {
+        const response = await productsService.create(newProductValues);
+        expect(response).to.be.an('object');
+      });
+      it('the object must have the expected values', async () => {
+        const response = await productsService.create(newProductValues);
         expect(response).to.be.eql(singleProduct);
       });
     });

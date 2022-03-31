@@ -22,7 +22,19 @@ const listById = async (id) => {
   return product;
 };
 
+const create = async ({ name, quantity }) => {
+  const existingProduct = await productsModel.findByName(name);
+
+  if (existingProduct) return errorObjects.productAlreadyExists;
+
+  const product = await productsModel.create({ name, quantity });
+  if (product instanceof Error) return errorObjects.internalServerError;
+
+  return product;
+};
+
 module.exports = {
   listAll,
   listById,
+  create,
 };

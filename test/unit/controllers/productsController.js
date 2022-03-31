@@ -148,4 +148,15 @@ describe('productsService.js', () => {
       });
     });
   });
+
+  describe('create should', () => {
+    describe('when product is not created because: ', () => {
+      const wrongRequests = {};
+
+      it('name is not in the request or is empty, returns an error with expected message and code', async () => {});
+      it('name length is less than 5, returns an error with expected message and code', async () => {});
+      it('quantity is not in the request or is empty, returns an error with expected message and code', async () => {});
+      it('quantity is smaller than 1, returns an error with expected message and code', async () => {});
+    });
+  });
 });
