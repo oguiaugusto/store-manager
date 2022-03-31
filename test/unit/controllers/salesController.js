@@ -265,4 +265,50 @@ describe('salesService.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when sale does not exist: ', () => {
+      const request = { params: { id: ID_TEST } };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+  
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+  
+        sinon.stub(salesService, 'remove').resolves(errorObjects.saleNotFound);
+      });
+      after(() => salesService.remove.restore());
+
+      it('return status `404 - Not Found` and json with message: `Sale not found`', async () => {
+        await salesController.remove(request, response, next);
+
+        expect(response.status.calledWith(httpCodes.NOT_FOUND)).to.be.true;
+        expect(response.json.calledWith({ message: errorMessages.saleNotFound })).to.be.true;
+      });
+    });
+
+    describe('when sale is removed: ', () => {
+      const request = { params: { id: ID_TEST } };
+      const response = {};
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+        response.end = sinon.stub().returns();
+
+        sinon.stub(salesService, 'remove').resolves();
+      });
+      after(() => salesService.remove.restore());
+
+      it('return status `204 - No Content`', async () => {
+        await salesController.remove(request, response);
+        expect(response.status.calledWith(httpCodes.NO_CONTENT)).to.be.true;
+      });
+      it('do not return any content in the body', async () => {
+        await salesController.remove(request, response);
+        expect(response.end.calledTwice).to.be.true;
+      });
+    });
+  });
 });
