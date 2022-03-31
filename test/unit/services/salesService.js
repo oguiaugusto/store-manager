@@ -1,10 +1,12 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 
+const productsModel = require('../../../models/productsModel');
 const salesModel = require('../../../models/salesModel');
 const salesService = require('../../../services/salesService');
 
-const { errorMessages } = require('../../../schemas/salesValidations');
+const pVal = require('../../../schemas/productsValidations');
+const { errorMessages, errorObjects } = require('../../../schemas/salesValidations');
 const httpCodes = require('../../../schemas/httpCodes');
 
 const salesById = [
@@ -204,9 +206,13 @@ describe('salesService.js', () => {
     describe('when an error is returned: ', () => {
       before(async () => {
         const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'listAll').resolves([{ id: ID_TEST }]);
         sinon.stub(salesModel, 'create').resolves(error);
       });
-      after(() => salesModel.create.restore());
+      after(() => {
+        salesModel.create.restore();
+        productsModel.listAll.restore();
+      });
 
       it('return an object with an error object', async () => {
         const response = await salesService.create(newSaleValues);
@@ -225,11 +231,42 @@ describe('salesService.js', () => {
       });
     });
 
+    describe('when productId does not exist: ', () => {
+      before(async () => {
+        sinon.stub(productsModel, 'listAll').resolves();
+        sinon.stub(salesModel, 'create').resolves(pVal.errorObjects.productNotFound);
+      });
+      after(() => {
+        salesModel.create.restore();
+        productsModel.listAll.restore();
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.create(newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.create(newSaleValues);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.NOT_FOUND);
+        expect(response.error.message).to.be.equal(pVal.errorMessages.productNotFound);
+      });
+    });
+
     describe('when sale is created: ', () => {
       before(async () => {
+        sinon.stub(productsModel, 'listAll').resolves([{ id: ID_TEST }]);
         sinon.stub(salesModel, 'create').resolves({ id: ID_TEST, itemsSold: newSaleValues });
       });
-      after(() => salesModel.create.restore());
+      after(() => {
+        salesModel.create.restore();
+        productsModel.listAll.restore();
+      });
 
       it('returns an object', async () => {
         const response = await salesService.create(newSaleValues);

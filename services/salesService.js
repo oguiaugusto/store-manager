@@ -1,5 +1,7 @@
 const salesModel = require('../models/salesModel');
+const productsModel = require('../models/productsModel');
 const { errorObjects } = require('../schemas/salesValidations');
+const pVal = require('../schemas/productsValidations');
 const validations = require('../schemas/genericValidations');
 
 const listAll = async () => {
@@ -23,6 +25,11 @@ const listById = async (id) => {
 };
 
 const create = async (products) => {
+  const allProducts = await productsModel.listAll() || [];
+  if (!products.some(({ productId }) => allProducts.some(({ id }) => id === productId))) {
+    return pVal.errorObjects.productNotFound;
+  }
+
   const sale = await salesModel.create(products);
 
   if (sale instanceof Error) return errorObjects.internalServerError;
