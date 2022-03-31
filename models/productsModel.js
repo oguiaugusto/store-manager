@@ -3,7 +3,7 @@ const connection = require('./connection');
 const listAll = async () => {
   try {
     const [products] = await connection.execute(
-      'SELECT * FROM StoreManager.products ORDER BY id',
+      'SELECT * FROM StoreManager.products ORDER BY id;',
     );
     
     if (!products || products.length === 0) return null;
@@ -16,7 +16,7 @@ const listAll = async () => {
 const listById = async (id) => {
   try {
     const [product] = await connection.execute(
-      'SELECT * FROM StoreManager.products WHERE id = ?',
+      'SELECT * FROM StoreManager.products WHERE id = ?;',
       [id],
     );
   
@@ -27,7 +27,21 @@ const listById = async (id) => {
   }
 };
 
+const create = async ({ name, quantity }) => {
+  try {
+    const [{ insertId: id }] = await connection.execute(
+      'INSERT INTO StoreManager.products(name, quantity) VALUES(?, ?);',
+      [name, quantity],
+    );
+
+    return { id, name, quantity };
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   listAll,
   listById,
+  create,
 };

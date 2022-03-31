@@ -16,6 +16,11 @@ const arrayOfProducts = [
   { id: 3, name: 'Product3', quantity: 3 },
 ];
 
+const objectToCreate = {
+  name: 'Product1',
+  quantity: 1,
+};
+
 const ID_TEST = 1;
 
 describe('productsModel.js', () => {
@@ -122,6 +127,38 @@ describe('productsModel.js', () => {
         expect(response).to.have.property('quantity');
 
         expect(response).to.be.eql(singleProduct)
+      });
+    });
+  });
+
+  describe('create should', () => {
+    describe('when product is not created: ', () => {
+      before(async () => {
+        const error = new Error('Product not created');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.create(objectToCreate);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when product is created: ', () => {
+      before(async () => {
+        const execute = [{ insertId: singleProduct.id }];
+        sinon.stub(connection, 'execute').resolves(execute);
+      });
+      after(() => connection.execute.restore());
+
+      it('returns an object', async () => {
+        const response = await productsModel.create(objectToCreate);
+        expect(response).to.be.an('object');
+      });
+      it('the object has expected keys and values', async () => {
+        const response = await productsModel.create(objectToCreate);
+        expect(response).to.be.eql(singleProduct);
       });
     });
   });
