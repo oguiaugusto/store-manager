@@ -36,7 +36,7 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
   const product = await productsService.remove(req.params.id);
 
-  if (product.error) return next(product.error);
+  if (product && product.error) return next(product.error);
   return res.status(httpCodes.NO_CONTENT).end();
 };
 

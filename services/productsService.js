@@ -24,6 +24,8 @@ const listById = async (id) => {
 
 const create = async ({ name, quantity }) => {
   const existingProduct = await productsModel.findByName(name);
+
+  if (existingProduct instanceof Error) return errorObjects.internalServerError;
   if (existingProduct) return errorObjects.productAlreadyExists;
 
   const product = await productsModel.create({ name, quantity });
@@ -34,6 +36,8 @@ const create = async ({ name, quantity }) => {
 
 const update = async ({ id, name, quantity }) => {
   const existingProduct = await productsModel.listById(id);
+
+  if (existingProduct instanceof Error) return errorObjects.internalServerError;
   if (!existingProduct) return errorObjects.productNotFound;
 
   const product = await productsModel.update({ id, name, quantity });
@@ -44,6 +48,8 @@ const update = async ({ id, name, quantity }) => {
 
 const remove = async (id) => {
   const existingProduct = await productsModel.listById(id);
+
+  if (existingProduct instanceof Error) return errorObjects.internalServerError;
   if (!existingProduct) return errorObjects.productNotFound;
 
   const product = await productsModel.remove(id);

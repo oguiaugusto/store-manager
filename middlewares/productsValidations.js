@@ -7,7 +7,7 @@ const {
 const { errorObjects } = require('../schemas/productsValidations');
 
 const productsValidations = (req, _res, next) => {
-  const { name, quantity } = req.body;
+  const { name = '', quantity = '' } = req.body;
 
   const conditionals = {
     nameIsRequired: () => isNull(name) || isEmpty(name),
@@ -15,9 +15,10 @@ const productsValidations = (req, _res, next) => {
     quantityIsRequired: () => isEmpty(quantity),
     quantityGraterThanZero: () => !isGraterThan(quantity, 0),
   };
+
   const conditional = Object.entries(conditionals).find((c) => c[1]());
 
-  if (conditional) return next(errorObjects[conditional[0]]);  
+  if (conditional) return next(errorObjects[conditional[0]].error);  
   return next();
 };
 
