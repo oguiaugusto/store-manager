@@ -244,4 +244,93 @@ describe('salesService.js', () => {
       });
     });
   });
+
+  describe('update should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listById').resolves(salesById);
+        sinon.stub(salesModel, 'update').resolves(error);
+      });
+      after(() => {
+        salesModel.listById.restore();
+        salesModel.update.restore();
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when an error is returned on seeking for existing sale', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listById').resolves(error);
+      });
+      after(() => salesModel.listById.restore());
+
+      it('return an object with an error object with expected', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when sale does not exist: ', () => {
+      before(async () => {
+        sinon.stub(salesModel, 'listById').resolves(null);
+      });
+      after(() => salesModel.listById.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+    });
+
+    describe('when sale is updated: ', () => {
+      before(async () => {
+        sinon.stub(salesModel, 'listById').resolves(salesById);
+        sinon.stub(salesModel, 'update').resolves({ id: ID_TEST, itemUpdated: newSaleValues });
+      });
+      after(() => {
+        salesModel.listById.restore();
+        salesModel.update.restore();
+      });
+
+      it('returns an object', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+        expect(response).to.be.an('object');
+      });
+      it('the object must have the expected values', async () => {
+        const response = await salesService.update(ID_TEST, newSaleValues);
+        expect(response).to.be.eql({ id: ID_TEST, itemUpdated: newSaleValues });
+      });
+    });
+  });
 });

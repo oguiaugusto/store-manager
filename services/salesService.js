@@ -30,8 +30,21 @@ const create = async (products) => {
   return sale;
 };
 
+const update = async (saleId, products) => {
+  const existingSale = await salesModel.listById(saleId);
+
+  if (existingSale instanceof Error) return errorObjects.internalServerError;
+  if (!existingSale) return errorObjects.saleNotFound;
+  
+  const sale = await salesModel.update(saleId, products);
+  if (sale instanceof Error) return errorObjects.internalServerError;
+
+  return sale;
+};
+
 module.exports = {
   listAll,
   listById,
   create,
+  update,
 };
