@@ -197,11 +197,35 @@ describe('productsService.js', () => {
         sinon.stub(productsModel, 'create').resolves(error);
       });
       after(() => {
-        productsModel.findByName.restore()
-        productsModel.create.restore()
+        productsModel.findByName.restore();
+        productsModel.create.restore();
       });
 
       it('return an object with an error object', async () => {
+        const response = await productsService.create(singleProduct.name);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await productsService.create(singleProduct.name);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when an error is returned on seeking for existing product', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'findByName').resolves(error);
+      });
+      after(() => productsModel.findByName.restore());
+
+      it('return an object with an error object with expected', async () => {
         const response = await productsService.create(singleProduct.name);
 
         expect(response).to.be.an('object');
@@ -283,6 +307,30 @@ describe('productsService.js', () => {
       });
     });
 
+    describe('when an error is returned on seeking for existing product', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'listById').resolves(error);
+      });
+      after(() => productsModel.listById.restore());
+
+      it('return an object with an error object with expected', async () => {
+        const response = await productsService.update(productToUpdate);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await productsService.update(productToUpdate);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
     describe('when product does not exist: ', () => {
       before(async () => {
         sinon.stub(productsModel, 'listById').resolves(null);
@@ -340,6 +388,30 @@ describe('productsService.js', () => {
       });
       it('the error object must have the keys `code` and `message` with expected values', async () => {
         const response = await productsService.remove(singleProduct.id);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when an error is returned on seeking for existing product', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'listById').resolves(error);
+      });
+      after(() => productsModel.listById.restore());
+
+      it('return an object with an error object with expected', async () => {
+        const response = await productsService.remove(productToUpdate);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await productsService.remove(productToUpdate);
 
         expect(response.error).to.have.property('code');
         expect(response.error).to.have.property('message');
