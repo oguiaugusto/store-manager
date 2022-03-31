@@ -56,12 +56,12 @@ const create = async ({ name, quantity }) => {
 
 const update = async ({ id, name, quantity }) => {
   try {
-    const [product] = await connection.execute(
+   await connection.execute(
       'UPDATE StoreManager.products SET name = ?, quantity = ? WHERE id = ?;',
       [name, quantity, id],
     );
 
-    return product;
+    return { id, name, quantity };
   } catch (error) {
     return error;
   }
