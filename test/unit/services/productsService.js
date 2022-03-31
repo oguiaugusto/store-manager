@@ -318,4 +318,65 @@ describe('productsService.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(productsModel, 'listById').resolves(singleProduct);
+        sinon.stub(productsModel, 'remove').resolves(error);
+      });
+      after(() => {
+        productsModel.listById.restore()
+        productsModel.remove.restore()
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await productsService.remove(singleProduct.id);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await productsService.remove(singleProduct.id);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when product does not exist: ', () => {
+      before(async () => {
+        sinon.stub(productsModel, 'listById').resolves(null);
+      });
+      after(() => productsModel.listById.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await productsService.remove(singleProduct.id);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+    });
+
+    describe('when product is removed: ', () => {
+      before(async () => {
+        sinon.stub(productsModel, 'listById').resolves(singleProduct);
+        sinon.stub(productsModel, 'remove').resolves();
+      });
+      after(() => {
+        productsModel.listById.restore();
+        productsModel.remove.restore();
+      });
+
+      it('does not return anything', async () => {
+        const response = await productsService.remove(singleProduct.id);
+        expect(response).to.be.undefined;
+      });
+    });
+  });
 });
