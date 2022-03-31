@@ -22,8 +22,18 @@ const create = async (req, res, next) => {
   return res.status(httpCodes.CREATED).json(sale);
 };
 
+const update = async (req, res, next) => {
+  const { params: { id }, body } = req;
+  
+  const sale = await salesService.update(id, body);
+  if (sale.error) return next(sale.error);
+
+  return res.status(httpCodes.OK).json(sale);
+};
+
 module.exports = {
   listAll,
   listById,
   create,
+  update,
 };

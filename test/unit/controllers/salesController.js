@@ -3,7 +3,7 @@ const sinon = require('sinon');
 
 const salesService = require('../../../services/salesService');
 const salesController = require('../../../controllers/salesController');
-const { errorObjects } = require('../../../schemas/salesValidations');
+const { errorObjects, errorMessages } = require('../../../schemas/salesValidations');
 const httpCodes = require('../../../schemas/httpCodes');
 const errorMiddleware = require('../../../middlewares/errorMiddleware');
 
@@ -50,7 +50,7 @@ const ID_TEST = 1;
 const INVALID_ID_TEST = 'INVALID';
 const NOT_FOUND_ID = 15855;
 
-const updateReturn = { id: ID_TEST, itemUpdated: newSaleValues };
+const createUpdateReturn = { id: ID_TEST, itemUpdated: newSaleValues };
 
 describe('salesService.js', () => {
   describe('listAll should', () => {
@@ -206,7 +206,7 @@ describe('salesService.js', () => {
         response.status = sinon.stub().returns(response);
         response.json = sinon.stub().returns();
 
-        sinon.stub(salesService, 'create').resolves(updateReturn);
+        sinon.stub(salesService, 'create').resolves(createUpdateReturn);
       });
       after(() => salesService.create.restore());
 
@@ -216,7 +216,52 @@ describe('salesService.js', () => {
       });
       it('return json with expected product', async () => {
         await salesController.create(request, response, next);
-        expect(response.json.calledWith(updateReturn)).to.be.true;
+        expect(response.json.calledWith(createUpdateReturn)).to.be.true;
+      });
+    });
+  });
+
+  describe.only('update should', () => {
+    describe('when product does not exist: ', () => {
+      const request = { body: newSaleValues, params: { id: ID_TEST } };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+  
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+  
+        sinon.stub(salesService, 'update').resolves(errorObjects.saleNotFound);
+      });
+      after(() => salesService.update.restore());
+
+      it('return status `404 - Not Found` and json with message: `Sale not found`', async () => {
+        await salesController.update(request, response, next);
+
+        expect(response.status.calledWith(httpCodes.NOT_FOUND)).to.be.true;
+        expect(response.json.calledWith({ message: errorMessages.saleNotFound })).to.be.true;
+      });
+    });
+
+    describe('when product is updated: ', () => {
+      const request = { body: newSaleValues, params: { id: ID_TEST } };
+      const response = {};
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(salesService, 'update').resolves(createUpdateReturn);
+      });
+      after(() => salesService.update.restore());
+
+      it('return status `200 - OK`', async () => {
+        await salesController.update(request, response);
+        expect(response.status.calledWith(httpCodes.OK)).to.be.true;
+      });
+      it('return json with product data updated', async () => {
+        await salesController.update(request, response);
+        expect(response.json.calledWith(createUpdateReturn)).to.be.true;
       });
     });
   });
