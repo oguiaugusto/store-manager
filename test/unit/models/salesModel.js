@@ -226,4 +226,31 @@ describe('salesModel.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when sale is not removed: ', () => {
+      before(async () => {
+        const error = new Error('Sale not removed');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await salesModel.remove(ID_TEST);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when sale is removed: ', () => {
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves();
+      });
+      after(() => connection.execute.restore());
+
+      it('does not return anything', async () => {
+        const response = await salesModel.remove(ID_TEST);
+        expect(response).to.be.undefined;
+      });
+    });
+  });
 });
