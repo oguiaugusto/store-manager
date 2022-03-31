@@ -73,7 +73,7 @@ const update = async (saleId, products) => {
       );
     });
 
-    return { id: saleId, itemUpdated: products };
+    return { saleId, itemUpdated: products };
   } catch (error) {
     return error;
   }
