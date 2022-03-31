@@ -7,15 +7,38 @@ const salesService = require('../../../services/salesService');
 const { errorMessages } = require('../../../schemas/salesValidations');
 const httpCodes = require('../../../schemas/httpCodes');
 
-const singleSale = {
-  id: 1,
-  date: '2022-03-28 00:00:00'
-};
+const salesById = [
+  {
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 1,
+    quantity: 5,
+  },
+  {
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 2,
+    quantity: 10,
+  },
+];
 
-const arrayOfSales = [
-  { id: 1, date: '2022-03-28 00:00:00' },
-  { id: 2, date: '2022-03-29 00:00:00' },
-  { id: 3, date: '2022-03-30 00:00:00' },
+const allSales = [
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 2,
+    quantity: 20,
+  },
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 3,
+    quantity: 30,
+  },
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 1,
+    quantity: 10,
+  },
 ];
 
 const ID_TEST = 1;
@@ -48,7 +71,7 @@ describe('salesService.js', () => {
 
     describe('when sales are found: ', () => {
       before(async () => {
-        sinon.stub(salesModel, 'listAll').resolves(arrayOfSales);
+        sinon.stub(salesModel, 'listAll').resolves(allSales);
       });
       after(() => salesModel.listAll.restore());
 
@@ -57,14 +80,7 @@ describe('salesService.js', () => {
 
         expect(response).to.be.an('array');
         response.forEach((item) => expect(item).to.be.an('object'));
-        expect(response).to.have.deep.members(arrayOfSales);
-      });
-      it('the array must be sorted by object ids ascending', async () => {
-        const response = await salesService.listAll();
-
-        const responseIds = response.map((r) => r.id);
-        const ascendingIds = [1, 2, 3];
-        expect(responseIds).to.have.deep.members(ascendingIds);
+        expect(response).to.have.deep.members(allSales);
       });
     });
   });
@@ -113,18 +129,20 @@ describe('salesService.js', () => {
 
     describe('when the sale is found: ', () => {
       before(async () => {
-        sinon.stub(salesModel, 'listById').resolves(singleSale);
+        sinon.stub(salesModel, 'listById').resolves(salesById);
       });
       after(() => salesModel.listById.restore());
 
-      it('return an object', async () => {
+      it('return an array of objects', async () => {
         const response = await salesService.listById(ID_TEST);
-        expect(response).to.be.an('object');
+        
+        expect(response).to.be.an('array');
+        response.forEach((item) => expect(item).to.be.an('object'));
       });
       it('the object must have the expected values', async () => {
         const response = await salesService.listById(ID_TEST);
 
-        expect(response).to.be.eql(singleSale);
+        expect(response).to.have.deep.members(salesById);
       });
     });
   });

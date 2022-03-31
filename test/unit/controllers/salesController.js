@@ -7,15 +7,38 @@ const { errorObjects } = require('../../../schemas/salesValidations');
 const httpCodes = require('../../../schemas/httpCodes');
 const errorMiddleware = require('../../../middlewares/errorMiddleware');
 
-const singleSale = {
-  id: 1,
-  date: '2022-03-28 00:00:00'
-};
+const salesById = [
+  {
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 1,
+    quantity: 5,
+  },
+  {
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 2,
+    quantity: 10,
+  },
+];
 
-const arrayOfSales = [
-  { id: 1, date: '2022-03-28 00:00:00' },
-  { id: 2, date: '2022-03-29 00:00:00' },
-  { id: 3, date: '2022-03-30 00:00:00' },
+const allSales = [
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 2,
+    quantity: 20,
+  },
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 3,
+    quantity: 30,
+  },
+  {
+    saleId: 1,
+    date: '2022-03-31T02:42:10.000Z',
+    productId: 1,
+    quantity: 10,
+  },
 ];
 
 const ID_TEST = 1;
@@ -58,7 +81,7 @@ describe('salesService.js', () => {
         response.status = sinon.stub().returns(response);
         response.json = sinon.stub().returns();
 
-        sinon.stub(salesService, 'listAll').resolves(arrayOfSales);
+        sinon.stub(salesService, 'listAll').resolves(allSales);
       });
       after(() => salesService.listAll.restore());
 
@@ -68,7 +91,7 @@ describe('salesService.js', () => {
       });
       it('return json with an array of sales (objects)', async () => {
         await salesController.listAll(request, response, next);
-        expect(response.json.calledWith(arrayOfSales)).to.be.true;
+        expect(response.json.calledWith(allSales)).to.be.true;
       });
     });
   });
@@ -133,7 +156,7 @@ describe('salesService.js', () => {
         response.status = sinon.stub().returns(response);
         response.json = sinon.stub().returns();
 
-        sinon.stub(salesService, 'listById').resolves(singleSale);
+        sinon.stub(salesService, 'listById').resolves(salesById);
       });
       after(() => salesService.listById.restore());
 
@@ -141,9 +164,9 @@ describe('salesService.js', () => {
         await salesController.listById(request, response, next);
         expect(response.status.calledWith(httpCodes.OK)).to.be.true;
       });
-      it('return json with found sale (object)', async () => {
+      it('return json with an array of sales (objects)', async () => {
         await salesController.listById(request, response, next);
-        expect(response.json.calledWith(singleSale)).to.be.true;
+        expect(response.json.calledWith(salesById)).to.be.true;
       });
     });
   });
