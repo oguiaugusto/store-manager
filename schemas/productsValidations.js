@@ -4,6 +4,7 @@ const errorMessages = {
   invalidId: '"id" must be a number!',
   noProductFound: 'No product was found',
   productNotFound: 'Product not found',
+  internalServerError: 'Internal Server Error',
 };
 
 const errorObjects = {
@@ -15,6 +16,9 @@ const errorObjects = {
   },
   productNotFound: {
     error: { code: httpCodes.NOT_FOUND, message: errorMessages.productNotFound },
+  },
+  internalServerError: {
+    error: { code: httpCodes.INTERNAL_SERVER_ERROR, message: errorMessages.internalServerError },
   },
 };
 

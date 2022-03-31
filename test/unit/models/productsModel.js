@@ -20,6 +20,19 @@ const ID_TEST = 1;
 
 describe('productsModel.js', () => {
   describe('listAll should', () => {
+    describe('when catches an error: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.listAll();
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
     describe('when no product is found: ', () => {
       before(async () => {
         const execute = [];
@@ -33,7 +46,7 @@ describe('productsModel.js', () => {
       });
     });
 
-    describe('when products are found', () => {
+    describe('when products are found: ', () => {
       before(async () => {
         const execute = [arrayOfProducts];
         sinon.stub(connection, 'execute').resolves(execute);
@@ -64,7 +77,20 @@ describe('productsModel.js', () => {
   });
 
   describe('listById should', () => {
-    describe('when no product is found', () => {
+    describe('when catches an error: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.listById(ID_TEST);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when no product is found: ', () => {
       before(async () => {
         const execute = [[]];
         sinon.stub(connection, 'execute').resolves(execute);
@@ -77,7 +103,7 @@ describe('productsModel.js', () => {
       });
     });
 
-    describe('when the product is found', () => {
+    describe('when the product is found: ', () => {
       before(async () => {
         const execute = [[singleProduct]];
         sinon.stub(connection, 'execute').resolves(execute);
