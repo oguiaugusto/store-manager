@@ -46,6 +46,30 @@ const INVALID_ID_TEST = 15855;
 
 describe('salesService.js', () => {
   describe('listAll should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listAll').resolves(error);
+      });
+      after(() => salesModel.listAll.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.listAll();
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.listAll();
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
     describe('when no sale is found: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listAll').resolves(null);
@@ -86,6 +110,30 @@ describe('salesService.js', () => {
   });
 
   describe('listById should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listById').resolves(error);
+      });
+      after(() => salesModel.listById.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.listById(ID_TEST);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.listById(ID_TEST);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
     describe('when id is invalid: ', () => {
       it('return an object with an error object', async () => {
         const response = await salesService.listById(null);

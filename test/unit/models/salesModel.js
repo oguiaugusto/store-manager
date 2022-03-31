@@ -42,6 +42,19 @@ const ID_TEST = 1;
 
 describe('salesModel.js', () => {
   describe('listAll should', () => {
+    describe('when catches an error: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await salesModel.listAll();
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
     describe('when no sale is found: ', () => {
       before(async () => {
         const execute = [];
@@ -87,6 +100,19 @@ describe('salesModel.js', () => {
   });
 
   describe('listById should', () => {
+    describe('when catches an error: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await salesModel.listById(ID_TEST);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
     describe('when no sale is found', () => {
       before(async () => {
         const execute = [[]];
