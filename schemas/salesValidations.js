@@ -9,6 +9,7 @@ const errorMessages = {
   quantityIsRequired: '"quantity" is required',
   quantityGraterThanZero: '"quantity" must be greater than or equal to 1',
   saleAlreadyExists: 'Sale already exists',
+  bodyMustBeAnArray: 'body must be an array',
 };
 
 const errorObjects = {
@@ -38,6 +39,9 @@ const errorObjects = {
   },
   saleAlreadyExists: {
     error: { code: httpCodes.CONFLICT, message: errorMessages.saleAlreadyExists },
+  },
+  bodyMustBeAnArray: {
+    error: { code: httpCodes.BAD_REQUEST, message: errorMessages.bodyMustBeAnArray },
   },
 };
 
