@@ -16,7 +16,7 @@ const arrayOfProducts = [
   { id: 3, name: 'Product3', quantity: 3 },
 ];
 
-const objectToCreate = {
+const newProductValues = {
   name: 'Product1',
   quantity: 1,
 };
@@ -140,7 +140,7 @@ describe('productsModel.js', () => {
       after(() => connection.execute.restore());
 
       it('return an error instance', async () => {
-        const response = await productsModel.create(objectToCreate);
+        const response = await productsModel.create(newProductValues);
         expect(response).to.be.a.instanceOf(Error);
       });
     });
@@ -153,11 +153,43 @@ describe('productsModel.js', () => {
       after(() => connection.execute.restore());
 
       it('returns an object', async () => {
-        const response = await productsModel.create(objectToCreate);
+        const response = await productsModel.create(newProductValues);
         expect(response).to.be.an('object');
       });
       it('the object has expected keys and values', async () => {
-        const response = await productsModel.create(objectToCreate);
+        const response = await productsModel.create(newProductValues);
+        expect(response).to.be.eql(singleProduct);
+      });
+    });
+  });
+
+  describe('update should', () => {
+    describe('when product is not updated: ', () => {
+      before(async () => {
+        const error = new Error('Product not updated');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.update({ ID_TEST, ...newProductValues });
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when product is updated: ', () => {
+      before(async () => {
+        const execute = [singleProduct];
+        sinon.stub(connection, 'execute').resolves(execute);
+      });
+      after(() => connection.execute.restore());
+
+      it('returns an object', async () => {
+        const response = await productsModel.update({ ID_TEST, ...newProductValues });
+        expect(response).to.be.an('object');
+      });
+      it('the object has expected keys and values', async () => {
+        const response = await productsModel.update({ ID_TEST, ...newProductValues });
         expect(response).to.be.eql(singleProduct);
       });
     });

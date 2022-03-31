@@ -40,8 +40,22 @@ const create = async ({ name, quantity }) => {
   }
 };
 
+const update = async ({ id, name, quantity }) => {
+  try {
+    const [product] = await connection.execute(
+      'UPDATE StoreManager.products SET name = ?, quantity = ? WHERE id = ?;',
+      [name, quantity, id],
+    );
+
+    return product;
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   listAll,
   listById,
   create,
+  update,
 };
