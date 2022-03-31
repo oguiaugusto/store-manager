@@ -370,4 +370,89 @@ describe('salesService.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listById').resolves(salesById);
+        sinon.stub(salesModel, 'remove').resolves(error);
+      });
+      after(() => {
+        salesModel.listById.restore()
+        salesModel.remove.restore()
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.remove(salesById.id);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.remove(salesById.id);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when an error is returned on seeking for existing sale', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'listById').resolves(error);
+      });
+      after(() => salesModel.listById.restore());
+
+      it('return an object with an error object with expected', async () => {
+        const response = await salesService.remove(salesById.id);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.remove(salesById.id);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when sale does not exist: ', () => {
+      before(async () => {
+        sinon.stub(salesModel, 'listById').resolves(null);
+      });
+      after(() => salesModel.listById.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.remove(salesById.id);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+    });
+
+    describe('when sale is removed: ', () => {
+      before(async () => {
+        sinon.stub(salesModel, 'listById').resolves(salesById);
+        sinon.stub(salesModel, 'remove').resolves();
+      });
+      after(() => {
+        salesModel.listById.restore();
+        salesModel.remove.restore();
+      });
+
+      it('does not return anything', async () => {
+        const response = await salesService.remove(salesById.id);
+        expect(response).to.be.undefined;
+      });
+    });
+  });
 });

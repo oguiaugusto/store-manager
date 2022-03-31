@@ -49,9 +49,20 @@ const update = async (saleId, products) => {
   return sale;
 };
 
+const remove = async (id) => {
+  const existingSale = await salesModel.listById(id);
+
+  if (existingSale instanceof Error) return errorObjects.internalServerError;
+  if (!existingSale) return errorObjects.saleNotFound;
+
+  const sale = await salesModel.remove(id);
+  if (sale instanceof Error) return errorObjects.internalServerError;
+};
+
 module.exports = {
   listAll,
   listById,
   create,
   update,
+  remove,
 };
