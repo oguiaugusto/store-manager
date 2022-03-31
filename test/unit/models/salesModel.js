@@ -217,7 +217,7 @@ describe('salesModel.js', () => {
         const response = await salesModel.update(ID_TEST, newSaleValues);
 
         expect(response).to.be.an('object');
-        expect(response).to.have.property('id');
+        expect(response).to.have.property('saleId');
         expect(response).to.have.property('itemUpdated');
       });
       it('the object has expected values (including the list of items)', async () => {
