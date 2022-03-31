@@ -189,4 +189,40 @@ describe('salesModel.js', () => {
       });
     });
   });
+
+  describe('update should', () => {
+    describe('when sale is not updated: ', () => {
+      before(async () => {
+        const error = new Error('sale not updated');
+        sinon.stub(Array.prototype, 'forEach').throws(error);
+        // I needed to stub the forEach because if I did it on connection.execute,
+        // it didn't reject on the second iteraction
+      });
+      after(() => Array.prototype.forEach.restore());
+  
+      it('return an error instance', async () => {
+        const response = await salesModel.update(ID_TEST, newSaleValues);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when sale is updated: ', () => {
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves();
+      });
+      after(() => connection.execute.restore());
+
+      it('returns an object with keys `id` and `itemUpdated`', async () => {
+        const response = await salesModel.update(ID_TEST, newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('id');
+        expect(response).to.have.property('itemUpdated');
+      });
+      it('the object has expected values (including the list of items)', async () => {
+        const response = await salesModel.update(ID_TEST, newSaleValues);
+        expect(response).to.be.eql({ id: ID_TEST, itemUpdated: newSaleValues });
+      });
+    });
+  });
 });
