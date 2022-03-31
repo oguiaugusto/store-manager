@@ -194,4 +194,32 @@ describe('productsModel.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when product is not removed: ', () => {
+      before(async () => {
+        const error = new Error('Product not removed');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.remove(ID_TEST);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when product is removed: ', () => {
+      before(async () => {
+        const execute = [singleProduct];
+        sinon.stub(connection, 'execute').resolves(execute);
+      });
+      after(() => connection.execute.restore());
+
+      it('does not return anything', async () => {
+        const response = await productsModel.remove(ID_TEST);
+        expect(response).to.be.undefined;
+      });
+    });
+  });
 });
