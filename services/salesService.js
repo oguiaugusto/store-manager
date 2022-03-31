@@ -22,7 +22,16 @@ const listById = async (id) => {
   return sale;
 };
 
+const create = async (products) => {
+  const sale = await salesModel.create(products);
+
+  if (sale instanceof Error) return errorObjects.internalServerError;
+
+  return sale;
+};
+
 module.exports = {
   listAll,
   listById,
+  create,
 };

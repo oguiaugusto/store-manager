@@ -41,6 +41,11 @@ const allSales = [
   },
 ];
 
+const newSaleValues = [
+  { productId: 1, quantity: 2 },
+  { productId: 2, quantity: 5 },
+];
+
 const ID_TEST = 1;
 const INVALID_ID_TEST = 15855;
 
@@ -191,6 +196,51 @@ describe('salesService.js', () => {
         const response = await salesService.listById(ID_TEST);
 
         expect(response).to.have.deep.members(salesById);
+      });
+    });
+  });
+
+  describe('create should', () => {
+    describe('when an error is returned: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(salesModel, 'create').resolves(error);
+      });
+      after(() => salesModel.create.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.create(newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.create(newSaleValues);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+
+    describe('when sale is created: ', () => {
+      before(async () => {
+        sinon.stub(salesModel, 'create').resolves({ id: ID_TEST, itemsSold: newSaleValues });
+      });
+      after(() => salesModel.create.restore());
+
+      it('returns an object', async () => {
+        const response = await salesService.create(newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('id');
+        expect(response).to.have.property('itemsSold');
+      });
+      it('the object has expected values (including the list of items)', async () => {
+        const response = await salesService.create(newSaleValues);
+        expect(response).to.be.eql({ id: ID_TEST, itemsSold: newSaleValues });
       });
     });
   });
