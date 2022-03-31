@@ -208,7 +208,8 @@ describe('salesModel.js', () => {
 
     describe('when sale is updated: ', () => {
       before(async () => {
-        sinon.stub(connection, 'execute').resolves();
+        const execute = [{ insertId: ID_TEST }];
+        sinon.stub(connection, 'execute').resolves(execute);
       });
       after(() => connection.execute.restore());
 
@@ -221,7 +222,7 @@ describe('salesModel.js', () => {
       });
       it('the object has expected values (including the list of items)', async () => {
         const response = await salesModel.update(ID_TEST, newSaleValues);
-        expect(response).to.be.eql({ id: ID_TEST, itemUpdated: newSaleValues });
+        expect(response).to.be.eql({ saleId: ID_TEST, itemUpdated: newSaleValues });
       });
     });
   });

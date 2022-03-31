@@ -50,7 +50,7 @@ const ID_TEST = 1;
 const INVALID_ID_TEST = 'INVALID';
 const NOT_FOUND_ID = 15855;
 
-const createUpdateReturn = { id: ID_TEST, itemUpdated: newSaleValues };
+const createUpdateReturn = { saleId: ID_TEST, itemUpdated: newSaleValues };
 
 describe('salesService.js', () => {
   describe('listAll should', () => {
@@ -221,7 +221,7 @@ describe('salesService.js', () => {
     });
   });
 
-  describe.only('update should', () => {
+  describe('update should', () => {
     describe('when product does not exist: ', () => {
       const request = { body: newSaleValues, params: { id: ID_TEST } };
       const response = {};

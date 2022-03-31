@@ -316,7 +316,7 @@ describe('salesService.js', () => {
     describe('when sale is updated: ', () => {
       before(async () => {
         sinon.stub(salesModel, 'listById').resolves(salesById);
-        sinon.stub(salesModel, 'update').resolves({ id: ID_TEST, itemUpdated: newSaleValues });
+        sinon.stub(salesModel, 'update').resolves({ saleId: ID_TEST, itemUpdated: newSaleValues });
       });
       after(() => {
         salesModel.listById.restore();
@@ -329,7 +329,7 @@ describe('salesService.js', () => {
       });
       it('the object must have the expected values', async () => {
         const response = await salesService.update(ID_TEST, newSaleValues);
-        expect(response).to.be.eql({ id: ID_TEST, itemUpdated: newSaleValues });
+        expect(response).to.be.eql({ saleId: ID_TEST, itemUpdated: newSaleValues });
       });
     });
   });
