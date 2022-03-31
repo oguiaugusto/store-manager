@@ -154,7 +154,7 @@ describe('productsService.js', () => {
     });
   });
 
-  describe.only('create should', () => {
+  describe('create should', () => {
     describe('when product already exists: ', () => {
       const request = { body: newProductValues };
       const response = {};
@@ -194,6 +194,51 @@ describe('productsService.js', () => {
       });
       it('return json with expected product', async () => {
         await productsController.create(request, response);
+        expect(response.json.calledWith(singleProduct)).to.be.true;
+      });
+    });
+  });
+
+  describe('update should', () => {
+    describe('when product does not exist: ', () => {
+      const request = { body: newProductValues, params: { id: ID_TEST } };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+  
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+  
+        sinon.stub(productsService, 'update').resolves(errorObjects.productNotFound);
+      });
+      after(() => productsService.update.restore());
+
+      it('return status `404 - Not Found` and json with message: `Product not found`', async () => {
+        await productsController.update(request, response, next);
+
+        expect(response.status.calledWith(httpCodes.NOT_FOUND)).to.be.true;
+        expect(response.json.calledWith({ message: errorMessages.productNotFound })).to.be.true;
+      });
+    });
+
+    describe('when product is updated: ', () => {
+      const request = { body: newProductValues, params: { id: ID_TEST } };
+      const response = {};
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsService, 'update').resolves(singleProduct);
+      });
+      after(() => productsService.update.restore());
+
+      it('return status `200 - OK`', async () => {
+        await productsController.update(request, response);
+        expect(response.status.calledWith(httpCodes.OK)).to.be.true;
+      });
+      it('return json with product data updated', async () => {
+        await productsController.update(request, response);
         expect(response.json.calledWith(singleProduct)).to.be.true;
       });
     });
