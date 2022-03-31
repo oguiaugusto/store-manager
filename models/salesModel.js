@@ -36,7 +36,34 @@ const listById = async (id) => {
   }
 };
 
+const insertIntoSalesProduct = async (saleId, { productId, quantity }) => connection.execute(
+  `
+  INSERT INTO StoreManager.sales_products(sale_id, product_id, quantity)
+  VALUES (?, ?, ?);`,
+  [saleId, productId, quantity],
+);
+
+const create = async (products) => {
+  try {
+    const [{ insertId: saleId }] = await connection.execute(
+      'INSERT INTO StoreManager.sales(`date`) VALUES(NOW());',
+    );
+    products.forEach(async (product) => {
+      await insertIntoSalesProduct(saleId, product);
+    });
+
+    return {
+      id: saleId,
+      itemsSold: products,
+    };
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   listAll,
   listById,
+  insertIntoSalesProduct,
+  create,
 };

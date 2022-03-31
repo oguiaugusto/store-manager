@@ -38,6 +38,11 @@ const allSales = [
   },
 ];
 
+const newSaleValues = [
+  { productId: 1, quantity: 2 },
+  { productId: 2, quantity: 5 },
+];
+
 const ID_TEST = 1;
 
 describe('salesModel.js', () => {
@@ -142,6 +147,45 @@ describe('salesModel.js', () => {
       it('the array has expected values', async () => {
         const response = await salesModel.listById(ID_TEST);
         expect(response).to.have.deep.members(salesById);
+      });
+    });
+  });
+
+  describe('create should', () => {
+    describe('when sale is not created: ', () => {
+      before(async () => {
+        const error = new Error('sale not created');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+  
+      it('return an error instance', async () => {
+        const response = await salesModel.create(newSaleValues);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when sale is created: ', () => {
+      before(async () => {
+        const execute = [{ insertId: ID_TEST }];
+        sinon.stub(connection, 'execute').resolves(execute);
+        sinon.stub(salesModel, 'insertIntoSalesProduct').resolves();
+      });
+      after(() => {
+        connection.execute.restore();
+        salesModel.insertIntoSalesProduct.restore();
+      });
+
+      it('returns an object with keys `id` and `itemsSold`', async () => {
+        const response = await salesModel.create(newSaleValues);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('id');
+        expect(response).to.have.property('itemsSold');
+      });
+      it('the object has expected values (including the list of items)', async () => {
+        const response = await salesModel.create(newSaleValues);
+        expect(response).to.be.eql({ id: ID_TEST, itemsSold: newSaleValues });
       });
     });
   });
