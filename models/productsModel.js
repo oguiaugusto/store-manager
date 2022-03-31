@@ -27,6 +27,20 @@ const listById = async (id) => {
   }
 };
 
+const findByName = async (name) => {
+  try {
+    const [product] = await connection.execute(
+      'SELECT * FROM StoreManager.products WHERE name = ?',
+      [name],
+    );
+
+    if (!product || product.length === 0) return null;
+    return product[0];
+  } catch (error) {
+    return error;
+  }
+};
+
 const create = async ({ name, quantity }) => {
   try {
     const [{ insertId: id }] = await connection.execute(
@@ -67,6 +81,7 @@ const remove = async (id) => {
 module.exports = {
   listAll,
   listById,
+  findByName,
   create,
   update,
   remove,

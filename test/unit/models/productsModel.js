@@ -22,6 +22,7 @@ const newProductValues = {
 };
 
 const ID_TEST = 1;
+const INVALID_NAME = 'Any invalid name';
 
 describe('productsModel.js', () => {
   describe('listAll should', () => {
@@ -127,6 +128,56 @@ describe('productsModel.js', () => {
         expect(response).to.have.property('quantity');
 
         expect(response).to.be.eql(singleProduct)
+      });
+    });
+  });
+
+  describe('findByName should', () => {
+    describe('when catches an error: ', () => {
+      before(async () => {
+        const error = new Error('Some error thing');
+        sinon.stub(connection, 'execute').rejects(error);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an error instance', async () => {
+        const response = await productsModel.findByName(INVALID_NAME);
+        expect(response).to.be.a.instanceOf(Error);
+      });
+    });
+
+    describe('when no product is found: ', () => {
+      before(async () => {
+        const execute = [[]];
+        sinon.stub(connection, 'execute').resolves(execute);
+      });
+      after(() => connection.execute.restore());
+
+      it('return null', async () => {
+        const response = await productsModel.findByName(INVALID_NAME);
+        expect(response).to.be.null;
+      });
+    });
+
+    describe('when product is found: ', () => {
+      before(async () => {
+        const execute = [[singleProduct]];
+        sinon.stub(connection, 'execute').resolves(execute);
+      });
+      after(() => connection.execute.restore());
+
+      it('return an object', async () => {
+        const response = await productsModel.findByName(singleProduct.name);
+        expect(response).to.be.an('object');
+      });
+      it('the object have expected keys and values', async () => {
+        const response = await productsModel.findByName(singleProduct.name);
+
+        expect(response).to.have.property('id');
+        expect(response).to.have.property('name');
+        expect(response).to.have.property('quantity');
+
+        expect(response).to.be.eql(singleProduct);
       });
     });
   });
