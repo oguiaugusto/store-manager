@@ -15,7 +15,17 @@ const listById = async (req, res, next) => {
   return res.status(httpCodes.OK).json(product);
 };
 
+const create = async (req, res, next) => {
+  const { name, quantity } = req.body;
+
+  const product = await productsService.create({ name, quantity });
+  if (product.error) return next(product.error);
+
+  return res.status(httpCodes.CREATED).json(product);
+};
+
 module.exports = {
   listAll,
   listById,
+  create,
 };

@@ -3,7 +3,7 @@ const sinon = require('sinon');
 
 const productsService = require('../../../services/productsService');
 const productsController = require('../../../controllers/productsController');
-const { errorObjects } = require('../../../schemas/productsValidations');
+const { errorObjects, errorMessages } = require('../../../schemas/productsValidations');
 const httpCodes = require('../../../schemas/httpCodes');
 const errorMiddleware = require('../../../middlewares/errorMiddleware');
 
@@ -18,6 +18,11 @@ const arrayOfProducts = [
   { id: 2, name: 'Product2', quantity: 2 },
   { id: 3, name: 'Product3', quantity: 3 },
 ];
+
+const newProductValues = {
+  name: 'Product1',
+  quantity: 1,
+};
 
 const ID_TEST = 1;
 const INVALID_ID_TEST = 'INVALID';
@@ -44,7 +49,7 @@ describe('productsService.js', () => {
       });
       it('return json with message: `Product not found', async () => {
         await productsController.listAll(request, response, next);
-        const jsonObj = { message: errorObjects.noProductFound.error.message };
+        const jsonObj = { message: errorMessages.noProductFound };
 
         expect(response.json.calledWith(jsonObj)).to.be.true;
       });
@@ -94,7 +99,7 @@ describe('productsService.js', () => {
       });
       it('return json with message: `"id" must be a number!`', async () => {
         await productsController.listById(request, response, next);
-        const jsonObj = { message: errorObjects.invalidId.error.message };
+        const jsonObj = { message: errorMessages.invalidId };
 
         expect(response.json.calledWith(jsonObj)).to.be.true;
       });
@@ -119,7 +124,7 @@ describe('productsService.js', () => {
       });
       it('return json with message: `Product not found`', async () => {
         await productsController.listById(request, response, next);
-        const jsonObj = { message: errorObjects.productNotFound.error.message };
+        const jsonObj = { message: errorMessages.productNotFound };
 
         expect(response.json.calledWith(jsonObj)).to.be.true;
       });
@@ -149,14 +154,48 @@ describe('productsService.js', () => {
     });
   });
 
-  describe('create should', () => {
-    describe('when product is not created because: ', () => {
-      const wrongRequests = {};
+  describe.only('create should', () => {
+    describe('when product already exists: ', () => {
+      const request = { body: newProductValues };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
 
-      it('name is not in the request or is empty, returns an error with expected message and code', async () => {});
-      it('name length is less than 5, returns an error with expected message and code', async () => {});
-      it('quantity is not in the request or is empty, returns an error with expected message and code', async () => {});
-      it('quantity is smaller than 1, returns an error with expected message and code', async () => {});
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsService, 'create').resolves(errorObjects.productAlreadyExists);
+      });
+      after(() => productsService.create.restore());
+
+      it('return status `409 - Conflict` and json with message: `Product already exists`', async () => {
+        await productsController.create(request, response, next);
+
+        expect(response.status.calledWith(httpCodes.CONFLICT)).to.be.true;
+        expect(response.json.calledWith({ message: errorMessages.productAlreadyExists })).to.be.true;
+      });
+    });
+    
+    describe('when product is created: ', () => {
+      const request = { body: newProductValues };
+      const response = {};
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon.stub(productsService, 'create').resolves(singleProduct);
+      });
+      after(() => productsService.create.restore());
+
+      it('return status `201 - Created`', async () => {
+        await productsController.create(request, response);
+        expect(response.status.calledWith(httpCodes.CREATED)).to.be.true;
+      });
+      it('return json with expected product', async () => {
+        await productsController.create(request, response);
+        expect(response.json.calledWith(singleProduct)).to.be.true;
+      });
     });
   });
 });
