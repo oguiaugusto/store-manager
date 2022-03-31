@@ -236,11 +236,11 @@ describe('productsModel.js', () => {
       after(() => connection.execute.restore());
 
       it('returns an object', async () => {
-        const response = await productsModel.update({ ID_TEST, ...newProductValues });
+        const response = await productsModel.update({ id: ID_TEST, ...newProductValues });
         expect(response).to.be.an('object');
       });
       it('the object has expected keys and values', async () => {
-        const response = await productsModel.update({ ID_TEST, ...newProductValues });
+        const response = await productsModel.update({ id: ID_TEST, ...newProductValues });
         expect(response).to.be.eql(singleProduct);
       });
     });
