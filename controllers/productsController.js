@@ -33,9 +33,17 @@ const update = async (req, res, next) => {
   return res.status(httpCodes.OK).json(product);
 };
 
+const remove = async (req, res, next) => {
+  const product = await productsService.remove(req.params.id);
+
+  if (product.error) return next(product.error);
+  return res.status(httpCodes.NO_CONTENT).end();
+};
+
 module.exports = {
   listAll,
   listById,
   create,
   update,
+  remove,
 };

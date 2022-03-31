@@ -243,4 +243,50 @@ describe('productsService.js', () => {
       });
     });
   });
+
+  describe('remove should', () => {
+    describe('when product does not exist: ', () => {
+      const request = { params: { id: ID_TEST } };
+      const response = {};
+      const next = (err) => errorMiddleware(err, request, response, () => {});
+  
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+  
+        sinon.stub(productsService, 'remove').resolves(errorObjects.productNotFound);
+      });
+      after(() => productsService.remove.restore());
+
+      it('return status `404 - Not Found` and json with message: `Product not found`', async () => {
+        await productsController.remove(request, response, next);
+
+        expect(response.status.calledWith(httpCodes.NOT_FOUND)).to.be.true;
+        expect(response.json.calledWith({ message: errorMessages.productNotFound })).to.be.true;
+      });
+    });
+
+    describe('when product is removed: ', () => {
+      const request = { params: { id: ID_TEST } };
+      const response = {};
+
+      before(async () => {
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+        response.end = sinon.stub().returns();
+
+        sinon.stub(productsService, 'remove').resolves(singleProduct);
+      });
+      after(() => productsService.remove.restore());
+
+      it('return status `204 - No Content`', async () => {
+        await productsController.remove(request, response);
+        expect(response.status.calledWith(httpCodes.NO_CONTENT)).to.be.true;
+      });
+      it('do not return any content in the body', async () => {
+        await productsController.remove(request, response);
+        expect(response.end.calledTwice).to.be.true;
+      });
+    });
+  });
 });
