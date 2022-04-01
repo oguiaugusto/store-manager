@@ -6,7 +6,7 @@ const listAll = async () => {
       `
       SELECT s.id AS saleId, s.date, p.id AS productId, p.quantity
       FROM StoreManager.products AS p
-      INNER JOIN StoreManager.sales_products AS sp ON sp.product_id = sale_id
+      INNER JOIN StoreManager.sales_products AS sp ON sp.product_id = p.id
       INNER JOIN StoreManager.sales AS s ON s.id = sp.sale_id
       ORDER BY saleId;`,
     );
