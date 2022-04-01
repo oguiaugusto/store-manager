@@ -64,7 +64,6 @@ const update = async ({ id, name, quantity }) => {
     await connection.execute(query, parameters);
     return { id, name, quantity };
   } catch (error) {
-    console.log(error);
     return error;
   }
 };
