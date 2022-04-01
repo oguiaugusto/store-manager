@@ -4,7 +4,7 @@ const listAll = async () => {
   try {
     const [sales] = await connection.execute(
       `
-      SELECT s.id AS saleId, s.date, p.id AS productId, p.quantity
+      SELECT s.id AS saleId, s.date, p.id AS productId, sp.quantity
       FROM StoreManager.products AS p
       INNER JOIN StoreManager.sales_products AS sp ON sp.product_id = p.id
       INNER JOIN StoreManager.sales AS s ON s.id = sp.sale_id
