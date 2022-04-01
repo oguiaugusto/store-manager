@@ -1,12 +1,12 @@
 # Welcome to my Store Manager One repository!
 
-This project was made by [Guilherme Augusto](https://github.com/oguiaugusto), using Node Express and MySQL to validate knowledge learned in [Trybe](https://www.betrybe.com/).
+This project was made by [Guilherme Augusto](https://github.com/oguiaugusto), using Node Express, MySQL and MSC architecture to validate knowledge learned in [Trybe](https://www.betrybe.com/).
 
 ---
 
 ## Description
 
-The objective was to create a Store Manager API using NodeJS and ExpressJS. All data was manipulated in a MySQL database.
+The objective was to create a Store Manager API using NodeJS and ExpressJS. It was developed using the software architecture **Model-Service-Controller**. All data was manipulated in a MySQL database.
 
 #### API Endpoints:
 
