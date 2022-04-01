@@ -230,8 +230,7 @@ describe('productsModel.js', () => {
 
     describe('when product is updated: ', () => {
       before(async () => {
-        const execute = [singleProduct];
-        sinon.stub(connection, 'execute').resolves(execute);
+        sinon.stub(connection, 'execute').resolves();
       });
       after(() => connection.execute.restore());
 
@@ -242,6 +241,20 @@ describe('productsModel.js', () => {
       it('the object has expected keys and values', async () => {
         const response = await productsModel.update({ id: ID_TEST, ...newProductValues });
         expect(response).to.be.eql(singleProduct);
+      });
+    });
+
+    describe('when name is undefined: ', () => {
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves();
+      });
+      after(() => connection.execute.restore());
+
+      it('query do not update product name', async () => {
+        await productsModel.update({ id: ID_TEST, quantity: 1 });
+        const expectedQuery = 'UPDATE StoreManager.products SET quantity = ? WHERE id = ?';
+
+        expect(connection.execute.calledWith(expectedQuery, [1, ID_TEST])).to.be.true;
       });
     });
   });
