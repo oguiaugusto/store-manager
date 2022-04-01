@@ -59,12 +59,12 @@ const update = async ({ id, name, quantity }) => {
     const query = name
       ? 'UPDATE StoreManager.products SET name = ?, quantity = ? WHERE id = ?;'
       : 'UPDATE StoreManager.products SET quantity = ? WHERE id = ?';
+    const parameters = name ? [name, quantity, id] : [quantity, id];
 
-    await connection.execute(query, [quantity, id]);
-    console.log(query);
-
+    await connection.execute(query, parameters);
     return { id, name, quantity };
   } catch (error) {
+    console.log(error);
     return error;
   }
 };
