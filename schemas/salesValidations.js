@@ -10,6 +10,7 @@ const errorMessages = {
   quantityGraterThanZero: '"quantity" must be greater than or equal to 1',
   saleAlreadyExists: 'Sale already exists',
   bodyMustBeAnArray: 'body must be an array',
+  deniedAmount: 'Such amount is not permitted to sell',
 };
 
 const errorObjects = {
@@ -42,6 +43,9 @@ const errorObjects = {
   },
   bodyMustBeAnArray: {
     error: { code: httpCodes.BAD_REQUEST, message: errorMessages.bodyMustBeAnArray },
+  },
+  deniedAmount: {
+    error: { code: httpCodes.UNPROCESSABLE_ENTITY, message: errorMessages.deniedAmount },
   },
 };
 

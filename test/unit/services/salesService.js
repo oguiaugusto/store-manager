@@ -455,4 +455,59 @@ describe('salesService.js', () => {
       });
     });
   });
+
+  describe('updateProductsAndReturn should', () => {
+    const products = [];
+    const sale = {};
+
+    describe('when any amount is invalid', () => {
+      before(() => {
+        sinon.stub(salesService.utilFunctions, 'isAnyAmountInvalid').resolves(true);
+      });
+      after(() => salesService.utilFunctions.isAnyAmountInvalid.restore());
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.updateProductsAndReturn(products, sale);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.updateProductsAndReturn(products, sale);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.UNPROCESSABLE_ENTITY);
+        expect(response.error.message).to.be.equal(errorMessages.deniedAmount);
+      });
+    });
+
+    describe('when returns cannot update products inventory', () => {
+      before(() => {
+        sinon.stub(salesService.utilFunctions, 'isAnyAmountInvalid').resolves(false);
+        sinon.stub(salesService.utilFunctions, 'updateProductsInventory').returns(false);
+      });
+      after(() => {
+        salesService.utilFunctions.isAnyAmountInvalid.restore();
+        salesService.utilFunctions.updateProductsInventory.restore();
+      });
+
+      it('return an object with an error object', async () => {
+        const response = await salesService.updateProductsAndReturn(products, sale);
+
+        expect(response).to.be.an('object');
+        expect(response).to.have.property('error');
+        expect(response.error).to.be.an('object');
+      });
+      it('the error object must have the keys `code` and `message` with expected values', async () => {
+        const response = await salesService.updateProductsAndReturn(products, sale);
+
+        expect(response.error).to.have.property('code');
+        expect(response.error).to.have.property('message');
+        expect(response.error.code).to.be.equal(httpCodes.INTERNAL_SERVER_ERROR);
+        expect(response.error.message).to.be.equal(errorMessages.internalServerError);
+      });
+    });
+  });
 });
