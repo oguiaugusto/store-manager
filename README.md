@@ -1,4 +1,4 @@
-# Welcome to my Store Manager One repository!
+# Welcome to my Store Manager repository!
 
 This project was made by [Guilherme Augusto](https://github.com/oguiaugusto), using Node Express, MySQL and MSC architecture to validate knowledge learned in [Trybe](https://www.betrybe.com/).
 
